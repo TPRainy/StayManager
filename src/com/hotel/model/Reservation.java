@@ -18,6 +18,13 @@ public class Reservation {
         this.checkOutDate=checkOutDate;
         this.total=total;
     }
+    public Reservation(Guest guest,Room room,LocalDate checkInDate,LocalDate checkOutDate,double total){
+        this.guest=guest;
+        this.room=room;
+        this.checkInDate=checkInDate;
+        this.checkOutDate=checkOutDate;
+        this.total=total;
+    }
 
     public int getId(){return id;}
     public Guest getGuest(){return guest;}

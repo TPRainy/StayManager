@@ -18,11 +18,11 @@ public class Guest {
     public void setId(int id){this.id=id;}
 
     public Guest(int id,String firstName, String lastName,String email,String phone){
-        id=this.id;
-        firstName=this.firstName;
-        lastName=this.lastName;
-        email=this.email;
-        phone=this.phone;
+        this.id=id;
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email=email;
+        this.phone=phone;
     }
 
     public int getId(){return id;}

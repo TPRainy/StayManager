@@ -11,22 +11,22 @@ import java.time.temporal.ChronoUnit;
 
 public class ReservationService {
 
-    public Reservation createReservation(Guest guest, Room room, LocalDate checkIn, LocalDate checkOut) {
+    public Reservation createReservation(Guest guest, Room room, LocalDate checkInDate, LocalDate checkOutDate) {
 
-        validateDates(checkIn, checkOut);
+        validateDates(checkInDate, checkOutDate);
 
         if (!room.isAvailable()) {
             throw new RoomNotAvailableException("Room " + room.getRoomNumber() + " is already occupied!");
         }
 
-        long days = ChronoUnit.DAYS.between(checkIn, checkOut);
+        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
         if (days == 0) days = 1;
 
         double totalPrice = days * room.getPricePerNight();
 
         room.setAvailable(false);
 
-        Reservation reservation = new Reservation(0, guest, room, checkIn, checkOut, totalPrice);
+        Reservation reservation = new Reservation(guest, room, checkInDate, checkOutDate, totalPrice);
 
         System.out.println("Reservation created successfully for " + guest.getFirstName());
         System.out.println("Total Price: " + totalPrice);
