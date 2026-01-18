@@ -1,4 +1,4 @@
-package edu.aitu.oop3.db.data; // Путь должен быть именно таким!
+package com.hotel.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;

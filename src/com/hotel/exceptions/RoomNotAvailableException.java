@@ -1,4 +1,4 @@
-package edu.aitu.oop3.db.exceptions;
+package com.hotel.exceptions;
 
 public class RoomNotAvailableException extends RuntimeException {
     public RoomNotAvailableException(String message) {
