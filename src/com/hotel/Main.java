@@ -1,40 +1,35 @@
 package com.hotel;
 
-import com.hotel.util.DBConnector;
-import com.hotel.util.IDB;
-import com.hotel.model.Guest;
-import com.hotel.model.Room;
 import com.hotel.services.ReservationService;
+import com.hotel.util.PostgresRepository;
 import java.time.LocalDate;
-import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
+        System.out.println(">>> HOTEL SYSTEM ONLINE (Supabase) <<<");
 
-        System.out.println("--- Testing DB Connection ---");
-        IDB db = new DBConnector();
+        PostgresRepository repo = new PostgresRepository();
 
-        try (Connection conn = db.getConnection()) {
-            if (conn != null) {
-                System.out.println("SUCCESS: Connected to Supabase (AWS Tokyo)!");
-            }
-        } catch (Exception e) {
-            System.out.println("FAILED: " + e.getMessage());
-        }
-
-        System.out.println("\n--- Testing Reservation Service ---");
-        ReservationService service = new ReservationService();
-
-        Guest guest = new Guest(1, "Ali", "Batyr", "ali@mail.kz", "87011112233");
-        Room room = new Room(101, "101", "Standard", 15000.0, true);
+        ReservationService service = new ReservationService(repo, repo, repo);
 
         try {
-            service.createReservation(guest, room, LocalDate.now(), LocalDate.now().plusDays(2));
+            System.out.println("Checking Room 101...");
+            if (service.checkAvailability(101)) {
+                System.out.println("Room is free! Booking now...");
 
-            System.out.println("Room 101 status (Available?): " + room.isAvailable());
+                int bookingId = service.createReservation(1, 101, LocalDate.now(), LocalDate.now().plusDays(3));
 
-        } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
+                System.out.println("SUCCESS! Check your Supabase Table Editor.");
+                System.out.println("Created Reservation ID: " + bookingId);
+
+                System.out.println("\n--- 3. Processing Payment ---");
+                service.payReservation(bookingId);
+
+                service.printReservationDetails(bookingId);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

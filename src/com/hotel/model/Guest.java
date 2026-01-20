@@ -7,27 +7,25 @@ public class Guest {
     private String email;
     private String phone;
 
-    public Guest(){}
+    public Guest() {}
 
-    public Guest(String firstName, String lastName,String email,String phone){
-        firstName=this.firstName;
-        lastName=this.lastName;
-        email=this.email;
-        phone=this.phone;
-    }
-    public void setId(int id){this.id=id;}
-
-    public Guest(int id,String firstName, String lastName,String email,String phone){
-        this.id=id;
-        this.firstName=firstName;
-        this.lastName=lastName;
-        this.email=email;
-        this.phone=phone;
+    public Guest(String firstName, String lastName, String email, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
     }
 
-    public int getId(){return id;}
-    public String getFirstName(){return firstName;}
-    public String getLastName(){return lastName;}
-    public String getEmail(){return email;}
-    public String getPhone(){return phone;}
+    public Guest(int id, String firstName, String lastName, String email, String phone) {
+        this(firstName, lastName, email, phone);
+        this.id = id;
+    }
+
+    public void setId(int id) { this.id = id; }
+    public int getId() { return id; }
+
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
 }
