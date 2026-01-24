@@ -1,4 +1,4 @@
-package com.hotel.util;
+package com.hotel.repositories;
 import com.hotel.model.Payment;
 
 public interface PaymentRepository {

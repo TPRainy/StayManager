@@ -1,7 +1,7 @@
 package com.hotel.services;
 
 import com.hotel.model.Reservation;
-import com.hotel.util.ReservationRepository;
+import com.hotel.repositories.ReservationRepository;
 
 public class PaymentService {
     private final ReservationRepository reservationRepo;

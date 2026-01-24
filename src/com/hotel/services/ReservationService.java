@@ -1,7 +1,9 @@
 package com.hotel.services;
 
 import com.hotel.model.*;
-import com.hotel.util.*;
+import com.hotel.repositories.GuestRepository;
+import com.hotel.repositories.ReservationRepository;
+import com.hotel.repositories.RoomRepository;
 import com.hotel.exceptions.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

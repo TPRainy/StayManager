@@ -1,6 +1,11 @@
-package com.hotel.util;
+package com.hotel.repositories;
 
 import com.hotel.model.*;
+import com.hotel.util.DBConnector;
+import com.hotel.util.IDB;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.*;
 
 public class PostgresRepository implements GuestRepository, RoomRepository, ReservationRepository, PaymentRepository {
@@ -70,14 +75,15 @@ public class PostgresRepository implements GuestRepository, RoomRepository, Rese
 
             if (rs.next()) {
                 int guestId = rs.getInt("guest_id");
-                Guest dummyGuest = new Guest(guestId, "Guest #" + guestId, "Unknown", "Unknown", "Unknown");
+                int roomId= rs.getInt("room_id");
 
-                Room dummyRoom = new Room(rs.getInt("room_id"), "Unknown", "Unknown", 0, false);
+                Guest realGuest = this.getGuestById(guestId);
+                Room realRoom = this.getRoomById(roomId);
 
                 Reservation r = new Reservation(
                         rs.getInt("id"),
-                        dummyGuest,
-                        dummyRoom,
+                        realGuest,
+                        realRoom,
                         rs.getDate("check_in").toLocalDate(),
                         rs.getDate("check_out").toLocalDate(),
                         rs.getDouble("total_price")
@@ -121,4 +127,55 @@ public class PostgresRepository implements GuestRepository, RoomRepository, Rese
             stmt.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
     }
+
+    @Override
+    public Guest saveGuest(Guest guest){
+        String sql="INSERT INTO guests (first_name, last_name, email, phone) VALUES (?,?,?,?)";
+        try (Connection conn= db.getConnection();
+             PreparedStatement stmt= conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+            stmt.setString(1, guest.getFirstName());
+            stmt.setString(2,guest.getLastName());
+            stmt.setString(3,guest.getEmail());
+            stmt.setString(4,guest.getPhone());
+
+            int affectedRows=stmt.executeUpdate();
+
+            if (affectedRows>0){
+                try (ResultSet rs = stmt.getGeneratedKeys()){
+                    if(rs.next()){
+                        int newId=rs.getInt(1);
+                        return new Guest(newId,guest.getFirstName(),guest.getLastName(),guest.getEmail(),guest.getPhone());
+                    }
+                }
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Room> findAvailableByDates(LocalDate start, LocalDate end) {
+        List<Room> rooms = new ArrayList<>();
+        // SQL находит комнаты, которые не имеют броней, перекрывающих выбранные даты
+        String sql = "SELECT * FROM rooms WHERE id NOT IN (" +
+                "SELECT room_id FROM reservations " +
+                "WHERE NOT (check_out <= ? OR check_in >= ?))";
+
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, java.sql.Date.valueOf(start));
+            stmt.setDate(2, java.sql.Date.valueOf(end));
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                rooms.add(new Room(
+                        rs.getInt("id"), rs.getString("room_number"),
+                        rs.getString("type"), rs.getDouble("price"), rs.getBoolean("is_available")
+                ));
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return rooms;
+    }
+
 }
