@@ -9,7 +9,7 @@ public class Main {
         System.out.println(">>> HOTEL SYSTEM ONLINE (Supabase) <<<");
 
         PostgresRepository repo = new PostgresRepository();
-        PaymentService payService = new PaymentService(repo);
+        PaymentService payService = new PaymentService(repo,repo);
         RoomAvailabilityService availabilityService = new RoomAvailabilityService(repo);
         ReservationService resService = new ReservationService(repo,repo,repo,availabilityService);
         ConsoleUI ui=new ConsoleUI(resService, payService, availabilityService, repo);

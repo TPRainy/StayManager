@@ -17,7 +17,7 @@ public class Payment {
         this.status=status;
     }
 
-    public Payment(int reservationId,int amount,LocalDateTime paymentDate,String status){
+    public Payment(int reservationId,double amount,LocalDateTime paymentDate,String status){
         this.reservationId=reservationId;
         this.amount=amount;
         this.paymentDate=paymentDate;
