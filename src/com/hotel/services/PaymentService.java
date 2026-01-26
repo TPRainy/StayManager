@@ -28,6 +28,7 @@ public class PaymentService {
         reservationRepo.updateReservation(res);
 
         Payment transaction=new Payment(res.getId(),res.getTotal(), LocalDateTime.now(),"Paid");
+        paymentRepo.savePayment(transaction);
         return true;
     }
 }
