@@ -2,6 +2,7 @@ package com.hotel.util;
 
 import com.hotel.model.Guest;
 import com.hotel.model.Reservation;
+import com.hotel.model.ReservationDetails;
 import com.hotel.model.Room;
 import com.hotel.services.*;
 import com.hotel.repositories.PostgresRepository;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    private final ReservationService resService;
+    private ReservationService resService;
     private final PaymentService paymentService;
     private final RoomAvailabilityService availabilityService;
     private final PostgresRepository repo;
@@ -110,12 +111,22 @@ public class ConsoleUI {
                 }
                 System.out.println("Successfully registered guest. Guest ID: "+ savedGuest.getId());
 
-                System.out.println("How long do plan to stay?");
+                System.out.println("How long do you plan to stay?");
                 int days=readInt();
                 LocalDate check_In=LocalDate.now();
                 LocalDate check_Out=check_In.plusDays(days);
 
-                int bookingId=resService.createReservation(savedGuest.getId(),roomId,check_In,check_Out);
+                System.out.println("Do you need extra options?" +
+                        "\n1.No" +
+                        "\n2.Breakfast in room" +
+                        "\n3.WiFi connection" +
+                        "\n4.All inclusive");
+                int optChoice=readInt();
+                String selectedOption="None";
+                if (optChoice==2) selectedOption="Breakfast in room";
+                else if (optChoice==3) selectedOption="WiFi connection";
+                else if (optChoice==4) selectedOption="All inclusive";
+                int bookingId=resService.createReservation(savedGuest.getId(),roomId,check_In,check_Out,selectedOption);
 
                 System.out.println("Reservation made successfully");
                 System.out.println("Reservation number: "+bookingId+" for guest: "+ savedGuest.getFirstName());
@@ -131,15 +142,18 @@ public class ConsoleUI {
             case 4:
                 System.out.println("Id of reservation: ");
                 int resId=readInt();
-                Reservation res=repo.getReservationById(resId);
-                if (res!=null){
-                    System.out.println("===Status of reservation===");
-                    System.out.println("Guest: "+res.getGuest().getFirstName());
-                    System.out.println("Status: "+(res.isPaid()?"PAID":"NOT PAID"));
-                } else {
-                    System.out.println("Not found");
-                }
-                break;
+                try{
+                ReservationDetails details=resService.getFullReservationDetails(resId);
+                    System.out.println("\n===Status of reservation===");
+                    System.out.println("Room:"+details.getRoom().getRoomNumber());
+                    System.out.println("Type:"+details.getRoom().getType());
+                    System.out.println("Options:"+details.getOptions());
+                    System.out.println("Final Price:"+details.getFinalPrice());
+                    System.out.println("Status:"+details.getPaymentStatus());
+                    System.out.println("------------------------------------------");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                } break;
             case 5:
                 System.out.println("Write Id of your reservation: ");
                 int idCancel=readInt();

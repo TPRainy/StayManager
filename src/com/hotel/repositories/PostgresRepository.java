@@ -49,7 +49,7 @@ public class PostgresRepository implements GuestRepository, RoomRepository, Rese
 
     @Override
     public void saveReservation(Reservation r) {
-        String sql = "INSERT INTO reservations (guest_id, room_id, check_in, check_out, total_price, is_paid) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reservations (guest_id, room_id, check_in, check_out, total_price, is_paid,options) VALUES (?, ?, ?, ?, ?, ?,?)";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, r.getGuest().getId());
@@ -58,6 +58,7 @@ public class PostgresRepository implements GuestRepository, RoomRepository, Rese
             stmt.setDate(4, Date.valueOf(r.getCheckOut()));
             stmt.setDouble(5, r.getTotal());
             stmt.setBoolean(6, r.isPaid());
+            stmt.setString(7,r.getOptions());
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -86,7 +87,8 @@ public class PostgresRepository implements GuestRepository, RoomRepository, Rese
                         realRoom,
                         rs.getDate("check_in").toLocalDate(),
                         rs.getDate("check_out").toLocalDate(),
-                        rs.getDouble("total_price")
+                        rs.getDouble("total_price"),
+                        rs.getString("options")
                 );
                 r.setPaid(rs.getBoolean("is_paid"));
                 return r;
