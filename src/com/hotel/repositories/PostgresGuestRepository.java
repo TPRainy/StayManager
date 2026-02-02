@@ -73,7 +73,7 @@ public class PostgresGuestRepository implements GuestRepository{
 
     @Override
     public void update(Guest guest) {
-        // Обновляем все поля по ID
+
         String sql = "UPDATE guests SET first_name=?, last_name=?, email=?, phone=? WHERE id=?";
 
         try (Connection conn = db.getConnection();
