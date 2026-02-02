@@ -18,17 +18,17 @@ public class PaymentService {
     }
 
     public boolean payReservation(int reservationId) {
-        Reservation res = reservationRepo.getReservationById(reservationId);
+        Reservation res = reservationRepo.getById(reservationId);
         if (res == null) throw new RuntimeException("Reservation not found");
 
         if (res.isPaid()) {
             return false;
         }
         res.setPaid(true);
-        reservationRepo.updateReservation(res);
+        reservationRepo.update(res);
 
         Payment transaction=new Payment(res.getId(),res.getTotal(), LocalDateTime.now(),"Paid");
-        paymentRepo.savePayment(transaction);
+        paymentRepo.save(transaction);
         return true;
     }
 }

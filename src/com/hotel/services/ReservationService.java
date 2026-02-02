@@ -27,21 +27,21 @@ public class ReservationService {
     }
 
     public void cancelReservation(int reservationId) {
-        Reservation res = reservationRepo.getReservationById(reservationId);
+        Reservation res = reservationRepo.getById(reservationId);
         if (res == null) throw new RuntimeException("Reservation not found");
 
         Room room = res.getRoom();
         room.setAvailable(true);
-        roomRepo.updateRoom(room);
+        roomRepo.update(room);
 
-        reservationRepo.deleteReservation(reservationId);
+        reservationRepo.delete(reservationId);
     }
 
     public int createReservation(int guestId, int roomId, LocalDate checkIn, LocalDate checkOut, String option) {
         validateDates(checkIn, checkOut);
 
-        Guest guest = guestRepo.getGuestById(guestId);
-        Room room = roomRepo.getRoomById(roomId);
+        Guest guest = guestRepo.getById(guestId);
+        Room room = roomRepo.getById(roomId);
         SeasonCalendar calendar = SeasonCalendar.getInstance();
 
         if (!availabilityService.isRoomAvailable(roomId)) {
@@ -70,10 +70,10 @@ public class ReservationService {
         double totalPrice = days * pricePerNightWithOption;
 
         room.setAvailable(false);
-        roomRepo.updateRoom(room);
+        roomRepo.update(room);
 
         Reservation reservation = new Reservation(0, guest, room, checkIn, checkOut, totalPrice, option);
-        reservationRepo.saveReservation(reservation);
+        reservationRepo.save(reservation);
 
         String notifType = (option != null && option.contains("WiFi")) ? "EMAIL" : "SMS";
 
@@ -85,7 +85,7 @@ public class ReservationService {
     }
 
     public ReservationDetails getFullReservationDetails(int reservationId){
-        Reservation res = reservationRepo.getReservationById(reservationId);
+        Reservation res = reservationRepo.getById(reservationId);
         return new ReservationDetails.Builder()
                 .setRoom(res.getRoom())
                 .setPaymentinfo(res.isPaid() ? "Paid" : "Pending", res.getTotal())
@@ -96,5 +96,9 @@ public class ReservationService {
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
         if (checkIn.isAfter(checkOut)) throw new InvalidDateException("Invalid dates!");
         if (checkIn.isBefore(LocalDate.now())) throw new InvalidDateException("Past date!");
+    }
+
+    public Guest registerGuest(Guest guest) {
+        return guestRepo.save(guest);
     }
 }

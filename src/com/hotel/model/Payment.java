@@ -29,4 +29,8 @@ public class Payment {
     public double getAmount() {return amount;}
     public LocalDateTime getPaymentDate() {return paymentDate;}
     public String getStatus(){return status;}
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

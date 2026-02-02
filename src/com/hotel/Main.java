@@ -1,18 +1,22 @@
 package com.hotel;
 
+import com.hotel.repositories.*;
 import com.hotel.services.*;
-import com.hotel.repositories.PostgresRepository;
 import com.hotel.util.ConsoleUI;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println(">>> HOTEL SYSTEM ONLINE (Supabase) <<<");
 
-        PostgresRepository repo = new PostgresRepository();
-        PaymentService payService = new PaymentService(repo,repo);
-        RoomAvailabilityService availabilityService = new RoomAvailabilityService(repo);
-        ReservationService resService = new ReservationService(repo,repo,repo,availabilityService);
-        ConsoleUI ui=new ConsoleUI(resService, payService, availabilityService, repo);
+        GuestRepository guestRepo=new PostgresGuestRepository();
+        RoomRepository roomRepo=new PostgresRoomRepository();
+        ReservationRepository resRepo=new PostgresReservationRepository();
+        PaymentRepository payRepo=new PostgresPaymentRepository();
+
+        PaymentService payService = new PaymentService(resRepo,payRepo);
+        RoomAvailabilityService availabilityService = new RoomAvailabilityService(roomRepo);
+        ReservationService resService = new ReservationService(guestRepo, roomRepo,resRepo,availabilityService);
+        ConsoleUI ui=new ConsoleUI(resService, payService, availabilityService);
 
         ui.start();
     }

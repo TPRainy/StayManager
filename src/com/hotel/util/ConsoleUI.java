@@ -5,7 +5,6 @@ import com.hotel.model.Reservation;
 import com.hotel.model.ReservationDetails;
 import com.hotel.model.Room;
 import com.hotel.services.*;
-import com.hotel.repositories.PostgresRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
@@ -14,17 +13,14 @@ public class ConsoleUI {
     private ReservationService resService;
     private final PaymentService paymentService;
     private final RoomAvailabilityService availabilityService;
-    private final PostgresRepository repo;
     private final Scanner scanner;
 
     public ConsoleUI(ReservationService resService,
                      PaymentService paymentService,
-                     RoomAvailabilityService availabilityService,
-                     PostgresRepository repo){
+                     RoomAvailabilityService availabilityService){
         this.resService=resService;
         this.paymentService=paymentService;
         this.availabilityService=availabilityService;
-        this.repo=repo;
         this.scanner= new Scanner(System.in);
     }
 
@@ -106,7 +102,7 @@ public class ConsoleUI {
                 String phone=scanner.nextLine();
 
                 Guest newGuest=new Guest(0, fName, lName, email,phone);
-                Guest savedGuest=repo.saveGuest(newGuest);
+                Guest savedGuest=resService.registerGuest(newGuest);
 
                 if (savedGuest==null){
                     System.out.println("Error saving guest");
