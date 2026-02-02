@@ -5,3 +5,4 @@ public class PaymentDeclinedException extends RuntimeException {
         super(message);
     }
 }
+
