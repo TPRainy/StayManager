@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PostgresGuestRepository implements GuestRepository{
     private final IDB db=new DBConnector();
-
+    
     @Override
     public Guest getById(int id) {
         String sql = "SELECT * FROM guests WHERE id = ?";
