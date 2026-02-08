@@ -18,7 +18,7 @@ public class SeasonCalendar {
         holidays.add(LocalDate.of(2026,12,16));
     }
 
-    public static SeasonCalendar getInstance(){
+    public static synchronized SeasonCalendar getInstance(){
         if (instance == null){
             instance = new SeasonCalendar();
         }
