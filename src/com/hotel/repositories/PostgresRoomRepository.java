@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostgresRoomRepository implements RoomRepository {
-    private final IDB db=new DBConnector();
+    private final IDB db= DBConnector.getInstance();
     @Override
     public Room getById(int id) {
         String sql = "SELECT * FROM rooms WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -38,8 +37,7 @@ public class PostgresRoomRepository implements RoomRepository {
         List<Room> rooms = new ArrayList<>();
         String sql = "SELECT * FROM rooms";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -58,8 +56,7 @@ public class PostgresRoomRepository implements RoomRepository {
     @Override
     public Room save(Room room) {
         String sql = "INSERT INTO rooms (room_number, type, price, is_available) VALUES (?, ?, ?, ?)";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, room.getRoomNumber());
             stmt.setString(2, room.getType()); // "VIP" или "Standard"
@@ -83,8 +80,7 @@ public class PostgresRoomRepository implements RoomRepository {
     @Override
     public void update(Room room) {
         String sql = "UPDATE rooms SET is_available = ?, price = ?, type = ? WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setBoolean(1, room.isAvailable());
             stmt.setDouble(2, room.getPricePerNight());
             stmt.setString(3, room.getType());
@@ -96,8 +92,7 @@ public class PostgresRoomRepository implements RoomRepository {
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM rooms WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
@@ -110,8 +105,7 @@ public class PostgresRoomRepository implements RoomRepository {
                 "SELECT room_id FROM reservations " +
                 "WHERE NOT (check_out <= ? OR check_in >= ?))";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setDate(1, java.sql.Date.valueOf(start));
             stmt.setDate(2, java.sql.Date.valueOf(end));
             ResultSet rs = stmt.executeQuery();

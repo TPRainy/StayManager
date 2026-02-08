@@ -11,15 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostgresReservationRepository implements ReservationRepository {
-    private final IDB db = new DBConnector();
+    private final IDB db = DBConnector.getInstance();
     private final GuestRepository guestRepo= new PostgresGuestRepository();
     private final RoomRepository roomRepo=new PostgresRoomRepository();
 
     @Override
     public Reservation save(Reservation r) {
         String sql = "INSERT INTO reservations (guest_id, room_id, check_in, check_out, total_price, is_paid,options) VALUES (?, ?, ?, ?, ?, ?,?)";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, r.getGuest().getId());
             stmt.setInt(2, r.getRoom().getId());
             stmt.setDate(3, Date.valueOf(r.getCheckIn()));
@@ -38,8 +37,7 @@ public class PostgresReservationRepository implements ReservationRepository {
     @Override
     public Reservation getById(int id) {
         String sql = "SELECT * FROM reservations WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
@@ -69,8 +67,7 @@ public class PostgresReservationRepository implements ReservationRepository {
     @Override
     public void update(Reservation r) {
         String sql = "UPDATE reservations SET is_paid = ? WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setBoolean(1, r.isPaid());
             stmt.setInt(2, r.getId());
             stmt.executeUpdate();
@@ -79,8 +76,7 @@ public class PostgresReservationRepository implements ReservationRepository {
 
     @Override public void delete(int id) {
         String sql = "DELETE FROM reservations WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
@@ -91,8 +87,7 @@ public class PostgresReservationRepository implements ReservationRepository {
         List<Reservation> reservations = new ArrayList<>();
         String sql = "SELECT * FROM reservations";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {

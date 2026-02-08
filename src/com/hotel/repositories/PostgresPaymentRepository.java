@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostgresPaymentRepository implements PaymentRepository{
-    private final IDB db = new DBConnector();
+    private final IDB db = DBConnector.getInstance();
 
     @Override
     public Payment save(Payment p) {
         String sql = "INSERT INTO payments (reservation_id, amount, payment_date, status) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, p.getReservationId());
             stmt.setDouble(2, p.getAmount());
@@ -42,8 +41,7 @@ public class PostgresPaymentRepository implements PaymentRepository{
     @Override
     public Payment getById(int id) {
         String sql = "SELECT * FROM payments WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -66,8 +64,7 @@ public class PostgresPaymentRepository implements PaymentRepository{
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT * FROM payments";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -86,8 +83,7 @@ public class PostgresPaymentRepository implements PaymentRepository{
     @Override
     public void update(Payment p) {
         String sql = "UPDATE payments SET status = ?, amount = ? WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
 
             stmt.setString(1, p.getStatus());
             stmt.setDouble(2, p.getAmount());
@@ -100,8 +96,7 @@ public class PostgresPaymentRepository implements PaymentRepository{
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM payments WHERE id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             stmt.executeUpdate();
